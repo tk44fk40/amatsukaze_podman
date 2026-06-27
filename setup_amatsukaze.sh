@@ -96,16 +96,12 @@ services:
       - "32768:32768"
       - "32769:32769"
 
-    security_opt:
-      - label=disable
-
     environment:
-      - RUN_UID=1000
-      - RUN_GID=1000
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
 
     devices:
+      - /dev/dri:/dev/dri
       - nvidia.com/gpu=all
 
     volumes:
@@ -364,7 +360,6 @@ RUN apt-get update \
         tzdata \
         software-properties-common \
         p7zip-full \
-        gosu \
         git \
         python3 \
         python3-pip \
@@ -478,23 +473,8 @@ RUN curl -s \
 RUN cat <<'EOE' > /app/entrypoint.sh
 #!/bin/bash
 set -e
-
 umask 022
-
-DEFAULT_UID=${RUN_UID:-1000}
-DEFAULT_GID=${RUN_GID:-1000}
-
-if ! getent group "$DEFAULT_GID" >/dev/null 2>&1; then
-  groupadd -g "$DEFAULT_GID" appgroup
-fi
-
-if ! getent passwd "$DEFAULT_UID" >/dev/null 2>&1; then
-  useradd -u "$DEFAULT_UID" -g "$DEFAULT_GID" -m -s /bin/bash appuser
-fi
-
-chown -R --no-dereference "$DEFAULT_UID:$DEFAULT_GID" /app
-
-exec gosu "$DEFAULT_UID" "$@"
+exec "$@"
 EOE
 
 RUN sed -i 's/\r$//' /app/entrypoint.sh \
