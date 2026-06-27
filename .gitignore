@@ -1,1 +1,15 @@
+compose.yml
+Dockerfile
+
+/avs/
+/bat/
+/config/
+/data/
+/drcs/
+/input/
+/JL/
+/logo/
+/output/
+/profile/
+
 build.log
