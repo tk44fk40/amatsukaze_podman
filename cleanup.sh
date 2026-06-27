@@ -14,6 +14,7 @@ dirs=(
   profile
   input
   output
+  temp
   compose.yml
   Dockerfile
 )

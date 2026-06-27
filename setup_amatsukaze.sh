@@ -25,6 +25,7 @@ dirs=(
   profile
   input
   output
+  temp
 )
 
 files=(
@@ -82,6 +83,8 @@ services:
   amatsukaze:
     image: amatsukaze
     container_name: amatsukaze
+    stop_signal: SIGINT
+    init: true
 
     build:
       context: ./
@@ -115,7 +118,7 @@ services:
       - ./profile:/app/profile:Z
       - ./input:/app/input:Z
       - ./output:/app/output:Z
-      - /tmp:/tmp:Z
+      - ./temp:/tmp:Z
 EOC
 
 # ============================================================
@@ -125,6 +128,16 @@ EOC
 echo "=== 4. Dockerfile 生成 ==="
 
 cat << 'EOD' > Dockerfile
+# ===【重要】===
+# CUDA 11.0 ランタイムが不足しているため、以下の deb ファイルを取得している。
+# バージョン番号が固定されていることに注意。
+# wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+#
+# === Ubuntu 24.04 にマイグレーションする場合の留意点 ===
+# Ubuntu 24.04 (Noble Numbat) の公式リポジトリやNVIDIAの24.04用リポジトリでは、
+# 古い CUDA 11 系のライブラリ（libcudart11.0）の提供が終了しているか、依存関係
+# （古い gcc 依存のランタイムなど）の理由でインストールできない可能性があります。
+
 
 # ============================================================
 # Builder stage

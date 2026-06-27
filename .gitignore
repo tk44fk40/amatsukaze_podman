@@ -1,6 +1,7 @@
 compose.yml
 Dockerfile
 
+/_backup/
 /avs/
 /bat/
 /config/
@@ -11,5 +12,6 @@ Dockerfile
 /logo/
 /output/
 /profile/
+/temp/
 
 build.log
