@@ -1,0 +1,1 @@
+/var/home/tk44/Documents/Podman/Ubuntu22.04 apt-get 署名エラー対応.md
