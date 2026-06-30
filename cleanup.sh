@@ -15,10 +15,17 @@ dirs=(
   input
   output
   temp
-  compose.yml
-  Dockerfile
 )
 
 for d in "${dirs[@]}"; do
   [ -e "$d" ] && rm -rf -- "$d"
+done
+
+files=(
+  compose.yml
+  Dockerfile
+)
+
+for f in "${files[@]}"; do
+  [ -e "$f" ] && rm -f -- "$f"
 done

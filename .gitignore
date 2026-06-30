@@ -2,6 +2,7 @@ compose.yml
 Dockerfile
 
 /_backup/
+/defaults/
 /avs/
 /bat/
 /config/

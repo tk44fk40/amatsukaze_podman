@@ -1,0 +1,48 @@
+services:
+  amatsukaze:
+    image: amatsukaze
+    container_name: amatsukaze
+    stop_signal: SIGINT
+    init: true
+
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        ENABLE_FASTER_WHISPER: "0"  # Faster-Whisper-XXLを含める場合は "1" に変更
+        ENABLE_VCEENCC: "0"  # VCEEncCを含める場合は "1" に変更
+
+    restart: always
+
+    ports:
+      - "32768:32768"
+      - "32769:32769"
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      #- NVIDIA_DRIVER_CAPABILITIES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+      - NVIDIA_DISABLE_REQUIRE=1
+      # Amatsukazeを実行するユーザーIDとグループIDを指定
+      - RUN_UID=1000
+      - RUN_GID=1000
+
+    volumes:
+      - ./avs:/app/avs:Z
+      - ./bat:/app/bat:Z
+      - ./config:/app/config:Z
+      - ./data:/app/data:Z
+      - ./drcs:/app/drcs:Z
+      - ./JL:/app/JL:Z
+      - ./logo:/app/logo:Z
+      - ./profile:/app/profile:Z
+      - ./input:/app/input:Z
+      - ./output:/app/output:Z
+      - ./temp:/tmp:Z
+
+    devices:
+      # CDIによるGPUパススルー
+      - "nvidia.com/gpu=all"
+    security_opt:
+      # SELinuxによるブロックの無効化（Compose標準構文）
+      - "label=disable"
