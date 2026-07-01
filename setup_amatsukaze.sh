@@ -28,9 +28,9 @@ setup_dockerfile() {
 
     # Dockerfile の存在確認
     if [[ ! -f "Dockerfile" ]]; then
-        if [[ -f "Dockerfile.sample" ]]; then
-            echo "⚠️  Dockerfile が見つかりません。Dockerfile.sample をコピーします..."
-            cp Dockerfile.sample Dockerfile
+        if [[ -f "Dockerfile.2404.sample" ]]; then
+            echo "⚠️  Dockerfile が見つかりません。Dockerfile.2404.sample をコピーします..."
+            cp Dockerfile.2404.sample Dockerfile
             echo "✅ Dockerfile を作成しました"
         else
             echo "❌ Dockerfile または Dockerfile.sampleが見つかりません"

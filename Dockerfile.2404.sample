@@ -257,7 +257,10 @@ RUN apt-get update && apt-get install -y \
         wget \
         tzdata \
         software-properties-common \
-        p7zip-full
+        p7zip-full \
+        libvulkan1 \
+        libglx0 \
+        libgl1
 
 RUN rm -f /etc/apt/sources.list.d/intel-gpu-*.list \
     && wget -qO - https://repositories.intel.com/gpu/intel-graphics.key | gpg --yes --dearmor --output /usr/share/keyrings/intel-graphics.gpg \
@@ -317,7 +320,7 @@ RUN if [ "$ENABLE_FASTER_WHISPER" = "1" ]; then \
     fi
 
 # ライブラリパスの設定
-ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu:/usr/lib64
 
 # 作業ディレクトリの設定
 WORKDIR /app
@@ -387,7 +390,15 @@ if [ -d /opt/Faster-Whisper-XXL ]; then
   find /opt/Faster-Whisper-XXL -type d -exec chown "$DEFAULT_UID:$DEFAULT_GID" {} +
   chmod ugo+rx /opt/Faster-Whisper-XXL/faster-whisper-xxl
 fi
+CARD_GROUP=""
+if [ -c /dev/dri/card1 ]; then
+  CARD_GID=$(stat -c "%g" /dev/dri/card1 2>/dev/null || echo "")
+  if [ -n "$CARD_GID" ]; then
+    CARD_GROUP=$(getent group "$CARD_GID" | cut -d: -f1 || true)
+  fi
+fi
 GROUPS_TO_ADD=()
+if [ -n "$CARD_GROUP" ]; then GROUPS_TO_ADD+=("$CARD_GROUP"); fi
 if getent group video >/dev/null 2>&1; then GROUPS_TO_ADD+=("video"); fi
 if [ -n "$RENDER_GROUP" ]; then GROUPS_TO_ADD+=("$RENDER_GROUP"); elif getent group render >/dev/null 2>&1; then GROUPS_TO_ADD+=("render"); fi
 if [ ${#GROUPS_TO_ADD[@]} -gt 0 ]; then
@@ -403,4 +414,4 @@ RUN sed -i 's/\r$//' /app/entrypoint.sh \
 
 # デフォルトコマンド
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ./AmatsukazeServer.sh
+CMD ["./AmatsukazeServer.sh"]
