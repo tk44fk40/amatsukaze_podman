@@ -20,9 +20,11 @@ services:
 
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
-      #- NVIDIA_DRIVER_CAPABILITIES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+      - NVIDIA_DRIVER_CAPABILITIES=all
       - NVIDIA_DISABLE_REQUIRE=1
+      #- VK_LOADER_DEBUG=all # DEBUGログを出力させる
+      # Bazzite側環境特性（X11非対応）対策
+      - VK_LOADER_DRIVERS_SELECT=nvidia_icd_egl.json
       # Amatsukazeを実行するユーザーIDとグループIDを指定
       - RUN_UID=1000
       - RUN_GID=1000
@@ -39,6 +41,9 @@ services:
       - ./input:/app/input:Z
       - ./output:/app/output:Z
       - ./temp:/tmp:Z
+      # Bazzite側環境特性（X11非対応）対策
+      # X11に依存しない libEGL_nvidia.so.0 を指定
+      - ./nvidia_icd_egl.json:/usr/share/vulkan/icd.d/nvidia_icd_egl.json:ro,Z
 
     devices:
       # CDIによるGPUパススルー
